@@ -34,16 +34,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="JsonTests.The deserialized input matches the verified output_2b288d8283fa5ee3.verified.txt">
+      <None Update="DeserializerTests.The deserialized input matches the verified output_2b288d8283fa5ee3.verified.txt">
         <DependentUpon>DeserializerTests.fs</DependentUpon>
       </None>
-      <None Update="JsonTests.The deserialized input matches the verified output_32cb679cc47b1101.verified.txt">
+      <None Update="DeserializerTests.The deserialized input matches the verified output_32cb679cc47b1101.verified.txt">
         <DependentUpon>DeserializerTests.fs</DependentUpon>
       </None>
-      <None Update="JsonTests.The deserialized input matches the verified output_988a8fa84b428de8.verified.txt">
+      <None Update="DeserializerTests.The deserialized input matches the verified output_988a8fa84b428de8.verified.txt">
         <DependentUpon>DeserializerTests.fs</DependentUpon>
       </None>
-      <None Update="JsonTests.The deserialized input matches the verified output_a1efa2e8f5c6762d.verified.txt">
+      <None Update="DeserializerTests.The deserialized input matches the verified output_a1efa2e8f5c6762d.verified.txt">
         <DependentUpon>DeserializerTests.fs</DependentUpon>
       </None>
     </ItemGroup>
