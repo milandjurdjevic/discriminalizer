@@ -1,0 +1,20 @@
+﻿[
+  {
+    Info: {
+      Name: Circle,
+      Radius: 5.0
+    }
+  },
+  {
+    Data: [
+      {
+        Name: Name,
+        Value: Circle
+      },
+      {
+        Name: Radius,
+        Value: 5.0
+      }
+    ]
+  }
+]

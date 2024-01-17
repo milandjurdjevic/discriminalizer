@@ -1,0 +1,7 @@
+﻿[
+  {
+    Name: Circle,
+    Sides: 1.0,
+    Dimensions: 2.0
+  }
+]

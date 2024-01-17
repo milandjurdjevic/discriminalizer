@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+
+        <IsPackable>false</IsPackable>
+        <GenerateProgramFile>false</GenerateProgramFile>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="DeserializerTests.fs" />
+        <Compile Include="Program.fs"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0"/>
+        <PackageReference Include="Verify.Xunit" Version="22.10.2"/>
+        <PackageReference Include="xunit" Version="2.6.4"/>
+        <PackageReference Include="xunit.extensibility.core" Version="2.6.4"/>
+        <PackageReference Include="xunit.extensibility.execution" Version="2.6.4"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector" Version="6.0.0">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Discriminalizer\Discriminalizer.fsproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="JsonTests.The deserialized input matches the verified output_2b288d8283fa5ee3.verified.txt">
+        <DependentUpon>DeserializerTests.fs</DependentUpon>
+      </None>
+      <None Update="JsonTests.The deserialized input matches the verified output_32cb679cc47b1101.verified.txt">
+        <DependentUpon>DeserializerTests.fs</DependentUpon>
+      </None>
+      <None Update="JsonTests.The deserialized input matches the verified output_988a8fa84b428de8.verified.txt">
+        <DependentUpon>DeserializerTests.fs</DependentUpon>
+      </None>
+      <None Update="JsonTests.The deserialized input matches the verified output_a1efa2e8f5c6762d.verified.txt">
+        <DependentUpon>DeserializerTests.fs</DependentUpon>
+      </None>
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Discriminator.fs" />
+        <Compile Include="Deserializer.fs" />
+        <None Include="README.md"/>
+    </ItemGroup>
+
+</Project>
