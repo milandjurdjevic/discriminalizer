@@ -6,7 +6,10 @@
 
     <ItemGroup>
         <Compile Include="Discriminator.fs"/>
-        <Compile Include="Json.fs" />
+        <Compile Include="Json.fs"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="../../README.md"/>
+    </ItemGroup>
 </Project>
