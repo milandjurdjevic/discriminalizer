@@ -2,7 +2,26 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
+        <PackageId>Discriminalizer</PackageId>
+        <Description>
+            Seamless JSON deserialization of complex object hierarchies, built on top of System.Text.Json.
+        </Description>
+        <PackageTags>json;system.text.json;discrimination;</PackageTags>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="MinVer" Version="4.3.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
     <ItemGroup>
         <Compile Include="Discriminator.fs"/>
@@ -10,6 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="../../README.md"/>
+        <None Include="../../img/icon.png" Pack="true" PackagePath="\"/>
+        <None Include="../../README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 </Project>
