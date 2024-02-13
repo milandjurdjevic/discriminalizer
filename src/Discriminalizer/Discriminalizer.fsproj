@@ -6,7 +6,7 @@
 
     <ItemGroup>
         <Compile Include="Discriminator.fs"/>
-        <Compile Include="Deserializer.fs"/>
+        <Compile Include="Json.fs" />
     </ItemGroup>
 
 </Project>

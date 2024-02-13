@@ -1,5 +1,5 @@
 [<VerifyXunit.UsesVerify>]
-module Discriminalizer.DeserializerTests
+module Discriminalizer.JsonTests
 
 open System.IO
 open System.Text
@@ -87,7 +87,7 @@ let ``The deserialized input matches the verified output`` (json: string) =
         use stream = new MemoryStream(bytes)
 
         let! output =
-            Deserializer.OfStream stream discriminators options CancellationToken.None
+            Json.OfStream stream discriminators options CancellationToken.None
             |> Async.AwaitTask
 
         do!

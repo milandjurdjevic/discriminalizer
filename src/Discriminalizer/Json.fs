@@ -1,4 +1,4 @@
-module Discriminalizer.Deserializer
+module Discriminalizer.Json
 
 open System
 open System.Collections.Generic
@@ -47,7 +47,6 @@ let private enumerate object = seq { yield object }
 let OfStream
     (stream: Stream)
     (discriminators: IReadOnlyCollection<Discriminator>)
-
     (options: JsonSerializerOptions)
     (cancellationToken: CancellationToken)
     =
