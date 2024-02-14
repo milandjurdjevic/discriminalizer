@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <PackageId>Discriminalizer</PackageId>
         <Description>
-            .NET library designed for seamless JSON deserialization of object with complex discrimination requirements,
+            .NET library designed for seamless JSON deserialization of objects with complex discrimination requirements,
             built on top of System.Text.Json.
         </Description>
         <PackageTags>json;system.text.json;discrimination;</PackageTags>
