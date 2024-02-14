@@ -1,4 +1,4 @@
-# Discriminalizer
+# Discriminalizer [![latest version](https://img.shields.io/nuget/v/discriminalizer)](https://www.nuget.org/packages/discriminalizer)
 
 .NET library designed for seamless JSON deserialization of objects with complex discrimination requirements, built on top
 of System.Text.Json.
