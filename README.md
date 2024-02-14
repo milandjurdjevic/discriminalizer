@@ -1,6 +1,6 @@
 # Discriminalizer
 
-.NET library designed for seamless JSON deserialization of object with complex discrimination requirements, built on top
+.NET library designed for seamless JSON deserialization of objects with complex discrimination requirements, built on top
 of System.Text.Json.
 
 ## Motivation
