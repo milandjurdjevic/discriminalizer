@@ -81,6 +81,15 @@ IEnumerable<object> objects = await Json.OfStream(jsonStream, options, Cancellat
 WildDog dog = objects.OfType<WildDog>().Single();
 ```
 
+### Schemaless objects
+
+If you want to deserialize objects that do not have a corresponding class, you need to enable it in the `JsonOptions`.
+The schemaless objects will be deserialized as `IReadOnlyDictionary<string, object>`.
+
+**IMPORTANT**: This feature uses recursion to travel through the nested JSON objects, so it can
+cause `StackOverflowException` if an object is too deep. Unless you really need this feature and you are sure that there
+are not too many levels of nested objects, it is best to keep it **disabled**.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for more details.
