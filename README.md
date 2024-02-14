@@ -1,21 +1,20 @@
 # Discriminalizer
 
-.NET library designed for seamless JSON deserialization of complex object hierarchies, built on top of System.Text.Json.
+.NET library designed for seamless JSON deserialization of object with complex discrimination requirements, built on top
+of System.Text.Json.
 
 ## Motivation
 
-Modern software development often involves dealing with diverse and complex data structures, particularly when working
-with APIs or external data sources. JSON deserialization is a critical aspect of such scenarios, and traditional
-approaches can become cumbersome, especially when handling polymorphic structures.
-This project was born out of the need for a streamlined and flexible solution for
-JSON deserialization within the .NET ecosystem. We recognized the challenges developers face when working with
-polymorphic object hierarchies and aimed to simplify this process.
-By leveraging the discriminator configuration approach and integrating with System.Text.Json, this library empowers
-developers to handle intricate JSON structures effortlessly. Whether you are working on a web application, API
-integration, or any project requiring efficient object deserialization, the library provides a
-robust toolset to enhance your development experience.
-We believe in fostering collaboration and welcome contributions from the community to make this library even more
-versatile and effective. Join us in simplifying JSON deserialization in .NET, and let's build better software together!
+In the realm of JSON deserialization, accommodating objects with intricate discrimination requirements can be
+challenging. While System.Text.Json provides robust support for basic deserialization tasks, handling complex
+discrimination logic often involves writing cumbersome and error-prone custom converters.
+
+The library simplifies this process by offering a straightforward solution for deserializing JSON data into objects with
+complex discrimination needs. By extending System.Text.Json's functionality, we provide developers with a seamless way
+to deserialize JSON, even when dealing with intricate discrimination requirements.
+
+With this library, developers can efficiently map JSON data to their object models without the need for extensive custom
+converter implementations. This simplifies the deserialization process, resulting in cleaner and more maintainable code.
 
 ## Usage
 
@@ -67,7 +66,7 @@ Discriminator discriminator = new Discriminator("Type", "Origin")
     .With<DomesticCat>("Cat", "Domestic");
 ```
 
-Finally, we can use the `Discriminator` to deserialize the JSON.
+Finally, we can use the `discriminator` to deserialize the JSON, using `Json.OfStream` method.
 
 ```csharp
 // Configure the deserialization options. You need to provide JsonSerializerOptions, a list of discriminators and
