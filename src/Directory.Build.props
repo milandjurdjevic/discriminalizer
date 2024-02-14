@@ -1,0 +1,11 @@
+<Project>
+    <PropertyGroup>
+        <NoWarn>NU5128</NoWarn>
+        <Authors>Milan Durdjevic</Authors>
+        <Copyright>Copyright (c) 2024 Milan Djurdjevic</Copyright>
+        <MinVerTagPrefix>v</MinVerTagPrefix>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    </PropertyGroup>
+</Project>
