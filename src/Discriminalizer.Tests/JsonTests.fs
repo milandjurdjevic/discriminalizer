@@ -45,6 +45,7 @@ type WildDog() =
 // lang=json
 [<InlineData("""
 [
+  {"Type": "Dog", "Origin": "Domestic" },
   { 
     "Animal": { "Type": "Fish", "Origin": "Wild" }
   },
