@@ -37,64 +37,97 @@ type DomesticDog() =
 type WildDog() =
     inherit Dog()
 
-[<Theory>]
-// Deserialize single object that is defined in a scheme.
-// lang=json
-[<InlineData("""{"Type": "Dog", "Origin": "Domestic" }""")>]
-// Deserialize array that contains objects without scheme (schemaless).
-// lang=json
-[<InlineData("""
-[
-  {"Type": "Dog", "Origin": "Domestic" },
-  { 
-    "Animal": { "Type": "Fish", "Origin": "Wild" }
-  },
-  {
-    "Animals": [
-      { "Type": "Fish", "Origin": "Wild" },
-      { "Type": "Fish", "Origin": "Domestic" }
-    ]
-  }
-]""")>]
-// Deserialize array that contains objects with two schemes.
-// lang=json
-[<InlineData("""
-[
-  {"Type": "Dog", "Origin": "Domestic" },
-  {"Type": "Cat", "Origin": "Domestic" },
-  {"Type": "Cat", "Origin": "Wild" },
-  {"Type": "Cat" },
-  {"Type": "Dog" }
-]
-""")>]
-// Deserialize array that contains a null object.
-// lang=json
-[<InlineData("""[{"Type": "Dog"}, null]""")>]
-let ``The deserialized input matches the verified output`` (json: string) =
-    async {
-        let discriminators =
-            [|
-               // Type and Origin based discriminator
-               Discriminator("Type", "Origin")
-                   .With<WildDog>("Dog", "Wild")
-                   .With<DomesticDog>("Dog", "Domestic")
-                   .With<WildCat>("Cat", "Wild")
-                   .With<DomesticCat>("Cat", "Domestic")
-               // Type based discriminator
-               Discriminator("Type").With<Cat>("Cat").With<Dog>("Dog") |]
+let discriminators =
+    [|
+       // Type and Origin based discriminator
+       Discriminator("Type", "Origin")
+           .With<WildDog>("Dog", "Wild")
+           .With<DomesticDog>("Dog", "Domestic")
+           .With<WildCat>("Cat", "Wild")
+           .With<DomesticCat>("Cat", "Domestic")
+       // Type based discriminator
+       Discriminator("Type").With<Cat>("Cat").With<Dog>("Dog") |]
 
+let deserialize (options: JsonOptions) (json: string) =
+    async {
         let bytes = Encoding.UTF8.GetBytes json
         use stream = new MemoryStream(bytes)
+        return! Json.OfStream stream options CancellationToken.None |> Async.AwaitTask
+    }
+
+let defaultOptions =
+    { Serializer = JsonSerializerOptions()
+      Discriminators = discriminators
+      IncludeSchemaless = false }
+
+[<Fact>]
+let ``Deserialize a single object`` () =
+    async {
+        // lang=json
+        let json = """{"Type": "Dog", "Origin": "Domestic" }"""
+        let! output = deserialize defaultOptions json
+        do! Verifier.Verify(output).ToTask() |> Async.AwaitTask |> Async.Ignore
+    }
+
+[<Fact>]
+let ``Deserialize array that contains null`` () =
+    async {
+        // lang=json
+        let json = """[{"Type": "Dog"}, null]"""
+        let! output = deserialize defaultOptions json
+        do! Verifier.Verify(output).ToTask() |> Async.AwaitTask |> Async.Ignore
+    }
+
+[<Fact>]
+let ``Deserialize array with two discriminator schemes`` () =
+    async {
+        // lang=json
+        let json =
+            """
+            [
+              {"Type": "Dog", "Origin": "Domestic" },
+              {"Type": "Cat", "Origin": "Domestic" },
+              {"Type": "Cat", "Origin": "Wild" },
+              {"Type": "Cat" },
+              {"Type": "Dog" }
+            ]
+            """
+
+        let! output = deserialize defaultOptions json
+        do! Verifier.Verify(output).ToTask() |> Async.AwaitTask |> Async.Ignore
+    }
+
+[<Theory>]
+[<InlineData true>]
+[<InlineData false>]
+let ``The deserialized array with some schemaless objects`` (includeSchemaless: bool) =
+    async {
+        //lang=json
+        let json =
+            """
+            [
+              { "Type": "Dog", "Origin": "Domestic" },
+              { 
+                "Animal": { "Type": "Fish", "Origin": "Wild" }
+              },
+              {
+                "Animals": [
+                  { "Type": "Fish", "Origin": "Wild" },
+                  { "Type": "Fish", "Origin": "Domestic" }
+                ]
+              }
+            ]
+            """
 
         let options =
             { Serializer = JsonSerializerOptions()
               Discriminators = discriminators
-              IncludeSchemaless = true }
+              IncludeSchemaless = includeSchemaless }
 
-        let! output = Json.OfStream stream options CancellationToken.None |> Async.AwaitTask
+        let! output = deserialize options json
 
         do!
-            Verifier.Verify(output).UseParameters(json).HashParameters().ToTask()
+            Verifier.Verify(output).UseParameters(includeSchemaless).ToTask()
             |> Async.AwaitTask
             |> Async.Ignore
     }

@@ -34,8 +34,8 @@ module Json =
         | :? JsonArray as jsonArray -> jsonArray |> Seq.map toSchemaless :> obj
         | _ -> failwith "Unsupported Json Type"
 
-    let private ofObject (discriminators: Discriminator seq) (options: JsonSerializerOptions) (json: JsonNode) =
-        discriminators
+    let private ofObject (options: JsonOptions) (json: JsonNode) =
+        options.Discriminators
         |> Seq.map (fun discriminator -> discriminator, discriminator.Paths |> Seq.map (tryFindNodeValue json))
         |> Seq.filter (fun (_, values) -> values |> Seq.forall (fun value -> value.IsSome))
         |> Seq.map (fun (discriminator, values) -> discriminator, values |> Seq.map (_.Value))
@@ -44,17 +44,17 @@ module Json =
         |> Seq.filter fst
         |> Seq.map snd
         |> Seq.tryHead
-        |> fun returnType ->
-            match returnType with
-            | None -> json |> toSchemaless
-            | Some some -> json.Deserialize(some, options)
+        |> fun typeOption ->
+            match typeOption with
+            | None ->
+                match options.IncludeSchemaless with
+                | true -> Some(toSchemaless json)
+                | false -> None
+            | Some some -> Some(json.Deserialize(some, options.Serializer))
 
-    let private ofArray (discriminators: Discriminator seq) (options: JsonSerializerOptions) (json: JsonArray) =
-        json
-        |> Seq.filter (fun i -> not (isNull i))
-        |> Seq.map (ofObject discriminators options)
+    let private ofArray (options: JsonOptions) (json: JsonArray) =
+        json |> Seq.filter (fun i -> not (isNull i)) |> Seq.map (ofObject options)
 
-    let private enumerate object = seq { yield object }
 
     let OfStream (stream: Stream) (options: JsonOptions) (cancellationToken: CancellationToken) =
         task {
@@ -62,7 +62,12 @@ module Json =
 
             return
                 match node with
-                | :? JsonArray as array -> ofArray options.Discriminators options.Serializer array
-                | :? JsonObject as object -> ofObject options.Discriminators options.Serializer object |> enumerate
+                | :? JsonArray as array -> ofArray options array |> Seq.filter (_.IsSome) |> Seq.map Option.get
+                | :? JsonObject as object ->
+                    ofObject options object
+                    |> fun option ->
+                        match option with
+                        | Some some -> [ some ]
+                        | None -> Seq.empty<obj>
                 | _ -> Seq.empty<obj>
         }
