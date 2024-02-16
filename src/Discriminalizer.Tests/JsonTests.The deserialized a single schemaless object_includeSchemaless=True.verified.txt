@@ -1,0 +1,14 @@
+﻿[
+  {
+    Animals: [
+      {
+        Origin: Wild,
+        Type: Fish
+      },
+      {
+        Origin: Domestic,
+        Type: Fish
+      }
+    ]
+  }
+]

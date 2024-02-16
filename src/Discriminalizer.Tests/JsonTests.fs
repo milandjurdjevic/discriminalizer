@@ -46,6 +46,35 @@ let ``Deserialize array with two discriminator schemes`` () =
 [<Theory>]
 [<InlineData true>]
 [<InlineData false>]
+let ``The deserialized a single schemaless object`` (includeSchemaless: bool) =
+    async {
+        //lang=json
+        let json =
+            """
+              {
+                "Animals": [
+                  { "Type": "Fish", "Origin": "Wild" },
+                  { "Type": "Fish", "Origin": "Domestic" }
+                ]
+              }
+            """
+
+        let options =
+            { Serializer = JsonSerializerOptions()
+              Discriminators = Fixture.discriminators
+              IncludeSchemaless = includeSchemaless }
+
+        let! output = Fixture.deserialize options json
+
+        do!
+            Verifier.Verify(output).UseParameters(includeSchemaless).ToTask()
+            |> Async.AwaitTask
+            |> Async.Ignore
+    }
+
+[<Theory>]
+[<InlineData true>]
+[<InlineData false>]
 let ``The deserialized array with some schemaless objects`` (includeSchemaless: bool) =
     async {
         //lang=json
