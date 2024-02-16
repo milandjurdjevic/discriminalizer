@@ -64,10 +64,8 @@ module Json =
                 match node with
                 | :? JsonArray as array -> ofArray options array |> Seq.filter (_.IsSome) |> Seq.map Option.get
                 | :? JsonObject as object ->
-                    ofObject options object
-                    |> fun option ->
-                        match option with
-                        | Some some -> [ some ]
-                        | None -> Seq.empty<obj>
+                    match ofObject options object with
+                    | Some some -> [ some ]
+                    | None -> Seq.empty<obj>
                 | _ -> Seq.empty<obj>
         }
