@@ -55,7 +55,6 @@ module Json =
     let private ofArray (options: JsonOptions) (json: JsonArray) =
         json |> Seq.filter (fun i -> not (isNull i)) |> Seq.map (ofObject options)
 
-
     let OfStream (stream: Stream) (options: JsonOptions) (cancellationToken: CancellationToken) =
         task {
             let! node = JsonSerializer.DeserializeAsync<JsonNode>(stream, options.Serializer, cancellationToken)
