@@ -32,7 +32,7 @@ module Json =
             |> readOnlyDict
             :> obj
         | :? JsonArray as jsonArray -> jsonArray |> Seq.map toSchemaless :> obj
-        | _ -> failwith "Unsupported Json Type"
+        | _ -> failwith $"Unsupported node type: {node.GetType().FullName}"
 
     let private ofObject (options: JsonOptions) (json: JsonNode) =
         options.Discriminators
