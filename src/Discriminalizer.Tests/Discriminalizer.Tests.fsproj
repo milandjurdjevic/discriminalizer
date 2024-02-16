@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Fixture.fs"/>
         <Compile Include="JsonTests.fs"/>
         <Compile Include="Program.fs"/>
     </ItemGroup>
