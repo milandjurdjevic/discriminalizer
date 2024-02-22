@@ -1,108 +1,92 @@
 [<VerifyXunit.UsesVerify>]
 module Discriminalizer.JsonTests
 
-open System.Text.Json
 open Discriminalizer.Tests
 open VerifyXunit
 open Xunit
 
 [<Fact>]
 let ``Deserialize single object`` () =
-    async {
-        // lang=json
-        let json = """{"Type": "Dog", "Origin": "Domestic" }"""
-        let! output = Fixture.deserialize Fixture.defaultOptions json
-        do! Verifier.Verify(output).ToTask() |> Async.AwaitTask |> Async.Ignore
-    }
+    // lang=json
+    """{"Type": "Dog", "Origin": "Domestic" }"""
+    |> String.toStream
+    |> Stream.toJsonNode
+    |> JsonNode.deserialize Scheme.options
+    |> Verifier.Verify
+
 
 [<Fact>]
 let ``Deserialize array that contains null`` () =
-    async {
-        // lang=json
-        let json = """[{"Type": "Dog"}, null]"""
-        let! output = Fixture.deserialize Fixture.defaultOptions json
-        do! Verifier.Verify(output).ToTask() |> Async.AwaitTask |> Async.Ignore
-    }
+    // lang=json
+    """[{"Type": "Dog"}, null]"""
+    |> String.toStream
+    |> Stream.toJsonNode
+    |> JsonNode.deserialize Scheme.options
+    |> Verifier.Verify
 
 [<Fact>]
 let ``Deserialize array with two discriminator schemes`` () =
-    async {
-        // lang=json
-        let json =
-            """
-            [
-              {"Type": "Dog", "Origin": "Domestic" },
-              {"Type": "Cat", "Origin": "Domestic" },
-              {"Type": "Cat", "Origin": "Wild" },
-              {"Type": "Cat" },
-              {"Type": "Dog" }
-            ]
-            """
-
-        let! output = Fixture.deserialize Fixture.defaultOptions json
-        do! Verifier.Verify(output).ToTask() |> Async.AwaitTask |> Async.Ignore
-    }
+    // lang=json
+    """
+    [
+      {"Type": "Dog", "Origin": "Domestic" },
+      {"Type": "Cat", "Origin": "Domestic" },
+      {"Type": "Cat", "Origin": "Wild" },
+      {"Type": "Cat" },
+      {"Type": "Dog" }
+    ]
+    """
+    |> String.toStream
+    |> Stream.toJsonNode
+    |> JsonNode.deserialize Scheme.options
+    |> Verifier.Verify
 
 [<Theory>]
 [<InlineData true>]
 [<InlineData false>]
 let ``Deserialize single schemaless object`` (includeSchemaless: bool) =
-    async {
-        //lang=json
-        let json =
-            """
-              {
-                "Animals": [
-                  { "Type": "Fish", "Origin": "Wild" },
-                  { "Type": "Fish", "Origin": "Domestic" }
-                ]
-              }
-            """
-
-        let options =
-            { Serializer = JsonSerializerOptions()
-              Discriminators = Fixture.discriminators
-              IncludeSchemaless = includeSchemaless }
-
-        let! output = Fixture.deserialize options json
-
-        do!
-            Verifier.Verify(output).UseParameters(includeSchemaless).ToTask()
-            |> Async.AwaitTask
-            |> Async.Ignore
-    }
+    //lang=json
+    """
+      {
+        "Animals": [
+          { "Type": "Fish", "Origin": "Wild" },
+          { "Type": "Fish", "Origin": "Domestic" }
+        ]
+      }
+    """
+    |> String.toStream
+    |> Stream.toJsonNode
+    |> JsonNode.deserialize
+        { Scheme.options with
+            IncludeSchemaless = includeSchemaless }
+    |> Verifier.Verify
+    |> _.UseParameters(includeSchemaless)
+    |> _.HashParameters()
 
 [<Theory>]
 [<InlineData true>]
 [<InlineData false>]
 let ``Deserialize array with some schemaless objects`` (includeSchemaless: bool) =
-    async {
-        //lang=json
-        let json =
-            """
-            [
-              { "Type": "Dog", "Origin": "Domestic" },
-              { 
-                "Animal": { "Type": "Fish", "Origin": "Wild" }
-              },
-              {
-                "Animals": [
-                  { "Type": "Fish", "Origin": "Wild" },
-                  { "Type": "Fish", "Origin": "Domestic" }
-                ]
-              }
-            ]
-            """
-
-        let options =
-            { Serializer = JsonSerializerOptions()
-              Discriminators = Fixture.discriminators
-              IncludeSchemaless = includeSchemaless }
-
-        let! output = Fixture.deserialize options json
-
-        do!
-            Verifier.Verify(output).UseParameters(includeSchemaless).ToTask()
-            |> Async.AwaitTask
-            |> Async.Ignore
-    }
+    //lang=json
+    """
+    [
+      { "Type": "Dog", "Origin": "Domestic" },
+      { 
+        "Animal": { "Type": "Fish", "Origin": "Wild" }
+      },
+      {
+        "Animals": [
+          { "Type": "Fish", "Origin": "Wild" },
+          { "Type": "Fish", "Origin": "Domestic" }
+        ]
+      }
+    ]
+    """
+    |> String.toStream
+    |> Stream.toJsonNode
+    |> JsonNode.deserialize
+        { Scheme.options with
+            IncludeSchemaless = includeSchemaless }
+    |> Verifier.Verify
+    |> _.UseParameters(includeSchemaless)
+    |> _.HashParameters()

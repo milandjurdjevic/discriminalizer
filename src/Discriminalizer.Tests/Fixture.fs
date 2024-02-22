@@ -1,59 +1,63 @@
-module Discriminalizer.Tests.Fixture
+namespace Discriminalizer.Tests
 
 open System.IO
 open System.Text
 open System.Text.Json
+open System.Text.Json.Nodes
 open System.Text.Json.Serialization
-open System.Threading
 open Discriminalizer
 
-[<AbstractClass>]
-type Animal() =
-    [<JsonPropertyName("Type")>]
-    member val AnimalType: string = "" with get, set
+module String =
+    let toStream (value: string) =
+        let bytes = Encoding.UTF8.GetBytes value
+        new MemoryStream(bytes)
 
-    [<JsonPropertyName("Origin")>]
-    member val AnimalOrigin: string = "" with get, set
+module Stream =
+    let toJsonNode (stream: Stream) =
+        JsonSerializer.Deserialize<JsonNode> stream
 
-    member this.ClassType: string = this.GetType().Name
+module JsonNode =
+    let deserialize (options: JsonOptions) (node: JsonNode) = Json.OfNode node options
 
-type Cat() =
-    inherit Animal()
+module Scheme =
+    [<AbstractClass>]
+    type Animal() =
+        [<JsonPropertyName("Type")>]
+        member val AnimalType: string = "" with get, set
 
-type DomesticCat() =
-    inherit Cat()
+        [<JsonPropertyName("Origin")>]
+        member val AnimalOrigin: string = "" with get, set
 
-type WildCat() =
-    inherit Cat()
+        member this.ClassType: string = this.GetType().Name
 
-type Dog() =
-    inherit Animal()
+    type Cat() =
+        inherit Animal()
 
-type DomesticDog() =
-    inherit Dog()
+    type DomesticCat() =
+        inherit Cat()
 
-type WildDog() =
-    inherit Dog()
+    type WildCat() =
+        inherit Cat()
 
-let discriminators =
-    [|
-       // Type and Origin based discriminator
-       Discriminator("Type", "Origin")
-           .With<WildDog>("Dog", "Wild")
-           .With<DomesticDog>("Dog", "Domestic")
-           .With<WildCat>("Cat", "Wild")
-           .With<DomesticCat>("Cat", "Domestic")
-       // Type based discriminator
-       Discriminator("Type").With<Cat>("Cat").With<Dog>("Dog") |]
+    type Dog() =
+        inherit Animal()
 
-let deserialize (options: JsonOptions) (json: string) =
-    async {
-        let bytes = Encoding.UTF8.GetBytes json
-        use stream = new MemoryStream(bytes)
-        return! Json.OfStream stream options CancellationToken.None |> Async.AwaitTask
-    }
+    type DomesticDog() =
+        inherit Dog()
 
-let defaultOptions =
-    { Serializer = JsonSerializerOptions()
-      Discriminators = discriminators
-      IncludeSchemaless = false }
+    type WildDog() =
+        inherit Dog()
+
+    let options =
+        { Serializer = JsonSerializerOptions()
+          Discriminators =
+            [|
+               // Type and Origin based discriminator
+               Discriminator("Type", "Origin")
+                   .With<WildDog>("Dog", "Wild")
+                   .With<DomesticDog>("Dog", "Domestic")
+                   .With<WildCat>("Cat", "Wild")
+                   .With<DomesticCat>("Cat", "Domestic")
+               // Type based discriminator
+               Discriminator("Type").With<Cat>("Cat").With<Dog>("Dog") |]
+          IncludeSchemaless = false }
