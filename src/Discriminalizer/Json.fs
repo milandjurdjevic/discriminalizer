@@ -1,27 +1,21 @@
 namespace Discriminalizer
 
+open System
 open System.Text.Json
+open System.Text.Json.Nodes
+open System.IO
+open System.Threading
+open Microsoft.FSharp.Core
 
 type JsonOptions =
     { Serializer: JsonSerializerOptions
       Discriminators: Discriminator seq
       IncludeSchemaless: bool }
 
-module Json =
+module private Nullable =
+    let isNotNull nullable = not (isNull nullable)
 
-    open System
-    open System.IO
-    open System.Text.Json.Nodes
-    open System.Threading
-    open Microsoft.FSharp.Core
-
-    let private tryFindNodeValue (node: JsonNode) (path: string) : string option =
-        node.AsObject()
-        |> Seq.tryFind (_.Key.Equals(path, StringComparison.OrdinalIgnoreCase))
-        |> fun value ->
-            match value with
-            | None -> None
-            | Some some -> Some(some.Value.ToString())
+module private JsonObject =
 
     let rec private toSchemaless (node: JsonNode) =
         match node with
@@ -34,9 +28,18 @@ module Json =
         | :? JsonArray as jsonArray -> jsonArray |> Seq.map toSchemaless :> obj
         | _ -> failwith $"Unsupported node type: {node.GetType().FullName}"
 
-    let private ofObject (options: JsonOptions) (json: JsonNode) =
+    let private tryGetNode (path: string) (object: JsonObject) =
+        object
+        |> Seq.tryFind (_.Key.Equals(path, StringComparison.OrdinalIgnoreCase))
+        |> fun value ->
+            match value with
+            | None -> None
+            | Some some -> Some(some.Value.ToString())
+
+    let deserialize (options: JsonOptions) (object: JsonObject) =
         options.Discriminators
-        |> Seq.map (fun discriminator -> discriminator, discriminator.Paths |> Seq.map (tryFindNodeValue json))
+        |> Seq.map (fun discriminator ->
+            discriminator, discriminator.Paths |> Seq.map (fun path -> tryGetNode path object))
         |> Seq.filter (fun (_, values) -> values |> Seq.forall (fun value -> value.IsSome))
         |> Seq.map (fun (discriminator, values) -> discriminator, values |> Seq.map (_.Value))
         |> Seq.map (fun (discriminator, values) ->
@@ -48,29 +51,31 @@ module Json =
             match typeOption with
             | None ->
                 match options.IncludeSchemaless with
-                | true -> Some(toSchemaless json)
+                | true -> Some(toSchemaless object)
                 | false -> None
-            | Some some -> Some(json.Deserialize(some, options.Serializer))
+            | Some some -> Some(object.Deserialize(some, options.Serializer))
 
-    let private isNotNull nullable = not (isNull nullable)
-
-    let OfNode (node: JsonNode) (options: JsonOptions) =
+module Json =
+    // Uses PascalCase because it is a public API.
+    let Deserialize (node: JsonNode) (options: JsonOptions) =
         match node with
         | :? JsonArray as array ->
             array
-            |> Seq.filter isNotNull
-            |> Seq.map (ofObject options)
+            |> Seq.filter Nullable.isNotNull
+            |> Seq.map _.AsObject()
+            |> Seq.map (JsonObject.deserialize options)
             |> Seq.filter (_.IsSome)
             |> Seq.map Option.get
         | :? JsonObject as object ->
             object
-            |> ofObject options
+            |> JsonObject.deserialize options
             |> Option.map Seq.singleton
             |> Option.defaultValue Seq.empty
         | _ -> Seq.empty<obj>
 
+    [<Obsolete("Use Json.Deserialize")>]
     let OfStream (stream: Stream) (options: JsonOptions) (cancellationToken: CancellationToken) =
         task {
             let! node = JsonSerializer.DeserializeAsync<JsonNode>(stream, options.Serializer, cancellationToken)
-            return OfNode node options
+            return Deserialize node options
         }

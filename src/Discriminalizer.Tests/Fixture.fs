@@ -17,7 +17,7 @@ module Stream =
         JsonSerializer.Deserialize<JsonNode> stream
 
 module JsonNode =
-    let deserialize (options: JsonOptions) (node: JsonNode) = Json.OfNode node options
+    let deserialize (options: JsonOptions) (node: JsonNode) = Json.Deserialize node options
 
 module Scheme =
     [<AbstractClass>]
