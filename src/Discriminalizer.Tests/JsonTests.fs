@@ -7,7 +7,7 @@ open VerifyXunit
 open Xunit
 
 [<Fact>]
-let ``Deserialize a single object`` () =
+let ``Deserialize single object`` () =
     async {
         // lang=json
         let json = """{"Type": "Dog", "Origin": "Domestic" }"""
@@ -46,7 +46,7 @@ let ``Deserialize array with two discriminator schemes`` () =
 [<Theory>]
 [<InlineData true>]
 [<InlineData false>]
-let ``The deserialized a single schemaless object`` (includeSchemaless: bool) =
+let ``Deserialize single schemaless object`` (includeSchemaless: bool) =
     async {
         //lang=json
         let json =
@@ -75,7 +75,7 @@ let ``The deserialized a single schemaless object`` (includeSchemaless: bool) =
 [<Theory>]
 [<InlineData true>]
 [<InlineData false>]
-let ``The deserialized array with some schemaless objects`` (includeSchemaless: bool) =
+let ``Deserialize array with some schemaless objects`` (includeSchemaless: bool) =
     async {
         //lang=json
         let json =
