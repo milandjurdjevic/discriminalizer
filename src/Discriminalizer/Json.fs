@@ -52,19 +52,25 @@ module Json =
                 | false -> None
             | Some some -> Some(json.Deserialize(some, options.Serializer))
 
-    let private ofArray (options: JsonOptions) (json: JsonArray) =
-        json |> Seq.filter (fun i -> not (isNull i)) |> Seq.map (ofObject options)
+    let private isNotNull nullable = not (isNull nullable)
+
+    let OfNode (node: JsonNode) (options: JsonOptions) =
+        match node with
+        | :? JsonArray as array ->
+            array
+            |> Seq.filter isNotNull
+            |> Seq.map (ofObject options)
+            |> Seq.filter (_.IsSome)
+            |> Seq.map Option.get
+        | :? JsonObject as object ->
+            object
+            |> ofObject options
+            |> Option.map Seq.singleton
+            |> Option.defaultValue Seq.empty
+        | _ -> Seq.empty<obj>
 
     let OfStream (stream: Stream) (options: JsonOptions) (cancellationToken: CancellationToken) =
         task {
             let! node = JsonSerializer.DeserializeAsync<JsonNode>(stream, options.Serializer, cancellationToken)
-
-            return
-                match node with
-                | :? JsonArray as array -> ofArray options array |> Seq.filter (_.IsSome) |> Seq.map Option.get
-                | :? JsonObject as object ->
-                    match ofObject options object with
-                    | Some some -> [ some ]
-                    | None -> Seq.empty<obj>
-                | _ -> Seq.empty<obj>
+            return OfNode node options
         }
