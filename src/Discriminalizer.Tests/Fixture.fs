@@ -49,15 +49,12 @@ module Scheme =
         inherit Dog()
 
     let options =
-        { Serializer = JsonSerializerOptions()
-          Discriminators =
-            [|
-               // Type and Origin based discriminator
-               Discriminator("Type", "Origin")
-                   .With<WildDog>("Dog", "Wild")
-                   .With<DomesticDog>("Dog", "Domestic")
-                   .With<WildCat>("Cat", "Wild")
-                   .With<DomesticCat>("Cat", "Domestic")
-               // Type based discriminator
-               Discriminator("Type").With<Cat>("Cat").With<Dog>("Dog") |]
-          IncludeSchemaless = false }
+        JsonOptions()
+        |> _.WithDiscriminator(
+            Discriminator("Type", "Origin")
+                .With<WildDog>("Dog", "Wild")
+                .With<DomesticDog>("Dog", "Domestic")
+                .With<WildCat>("Cat", "Wild")
+                .With<DomesticCat>("Cat", "Domestic")
+        )
+        |> _.WithDiscriminator(Discriminator("Type").With<Cat>("Cat").With<Dog>("Dog"))

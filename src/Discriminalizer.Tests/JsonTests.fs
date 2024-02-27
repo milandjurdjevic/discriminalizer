@@ -56,9 +56,7 @@ let ``Deserialize single schemaless object`` (includeSchemaless: bool) =
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> JsonNode.deserialize
-        { Scheme.options with
-            IncludeSchemaless = includeSchemaless }
+    |> JsonNode.deserialize (Scheme.options.WithSchemaless())
     |> Verifier.Verify
     |> _.UseParameters(includeSchemaless)
     |> _.HashParameters()
@@ -84,9 +82,7 @@ let ``Deserialize array with some schemaless objects`` (includeSchemaless: bool)
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> JsonNode.deserialize
-        { Scheme.options with
-            IncludeSchemaless = includeSchemaless }
+    |> JsonNode.deserialize (Scheme.options.WithSchemaless())
     |> Verifier.Verify
     |> _.UseParameters(includeSchemaless)
     |> _.HashParameters()

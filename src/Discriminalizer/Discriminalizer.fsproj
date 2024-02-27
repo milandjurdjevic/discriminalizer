@@ -25,7 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="Discriminator.fs"/>
         <Compile Include="Json.fs"/>
     </ItemGroup>
 

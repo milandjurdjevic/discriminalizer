@@ -1,22 +1,50 @@
 namespace Discriminalizer
 
 open System
+open System.Collections.Generic
+open System.Collections.Immutable
 open System.Text.Json
 open System.Text.Json.Nodes
-open System.IO
-open System.Threading
 open Microsoft.FSharp.Core
 
-type JsonOptions =
-    { Serializer: JsonSerializerOptions
-      Discriminators: Discriminator seq
-      IncludeSchemaless: bool }
+type Discriminator private (paths: IReadOnlyCollection<string>, values: IReadOnlyDictionary<string, Type>) =
+    new([<ParamArray>] paths: string array) = Discriminator(paths, ImmutableDictionary.Empty)
+
+    member _.Paths = paths
+    member _.Values = values
+
+    member _.With<'T>([<ParamArray>] keys: string array) =
+        let dictionary = Dictionary(values)
+        dictionary.Add(keys |> String.concat String.Empty, typeof<'T>)
+        Discriminator(paths, dictionary.ToImmutableDictionary())
+
+module private JsonSerializerOptions =
+    let toReadOnly (options: JsonSerializerOptions) =
+        options.MakeReadOnly()
+        options
+
+type JsonOptions private (serializer: JsonSerializerOptions, discriminators: Discriminator seq, includeSchemaless: bool)
+    =
+    new() = JsonOptions(JsonSerializerOptions.Default |> JsonSerializerOptions.toReadOnly, Seq.empty, false)
+
+    member _.Serializer = serializer
+    member _.Discriminators = discriminators
+    member _.IncludeSchemaless = includeSchemaless
+
+    member _.WithSerializer(serializer: JsonSerializerOptions) =
+        JsonOptions(serializer |> JsonSerializerOptions.toReadOnly, discriminators, includeSchemaless)
+
+    member _.WithDiscriminator(discriminator) =
+        let discriminators = discriminator |> Seq.singleton |> Seq.append discriminators
+        JsonOptions(serializer, discriminators, includeSchemaless)
+
+    member _.WithSchemaless() =
+        JsonOptions(serializer, discriminators, true)
 
 module private Nullable =
     let isNotNull nullable = not (isNull nullable)
 
 module private JsonObject =
-
     let rec private toSchemaless (node: JsonNode) =
         match node with
         | :? JsonValue as jsonValue -> jsonValue.ToString() :> obj
@@ -56,7 +84,6 @@ module private JsonObject =
             | Some some -> Some(object.Deserialize(some, options.Serializer))
 
 module Json =
-    // Uses PascalCase because it is a public API.
     let Deserialize (node: JsonNode) (options: JsonOptions) =
         match node with
         | :? JsonArray as array ->
@@ -71,11 +98,4 @@ module Json =
             |> JsonObject.deserialize options
             |> Option.map Seq.singleton
             |> Option.defaultValue Seq.empty
-        | _ -> Seq.empty<obj>
-
-    [<Obsolete("Use Json.Deserialize")>]
-    let OfStream (stream: Stream) (options: JsonOptions) (cancellationToken: CancellationToken) =
-        task {
-            let! node = JsonSerializer.DeserializeAsync<JsonNode>(stream, options.Serializer, cancellationToken)
-            return Deserialize node options
-        }
+        | _ -> Seq.empty
