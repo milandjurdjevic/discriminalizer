@@ -66,19 +66,22 @@ Discriminator discriminator = new Discriminator("Type", "Origin")
     .With<DomesticCat>("Cat", "Domestic");
 ```
 
-Finally, we can use the `discriminator` to deserialize the JSON, using `Json.OfStream` method.
+Finally, we can use the `discriminator` to deserialize the JSON.
 
 ```csharp
 // Configure the deserialization options. You need to provide JsonSerializerOptions, a list of discriminators and
 // a flag that indicates if "schemaless" objects should be deserialized as well. 
 // Schemaless objects are objects without a coresponding class.
-JsonOptions options = new(JsonSerializerOptions.Default, [discriminator], false);
+JsonOptions options = new JsonOptions().WithDiscriminator(discriminator);
 
-// Variable "jsonStream" is a JSON string converted to Stream. For simplicity, it is excluded from this example.
-IEnumerable<object> objects = await Json.OfStream(jsonStream, options, CancellationToken.None);
+// Deserialize a JSON string (variable is out of scope) to JsonNode using System.Text.Json.JsonSerializer.
+JsonNode jsonNode = JsonSerializer.Deserialize<JsonNode>(jsonString);
+
+// Deserialize JsonNode into matching list of objects.
+IEnumerable<object> deserialized = await Json.Deserialize(jsonNode, options, CancellationToken.None);
 
 // You can use the ".OfType<T>()" extension method to filter the objects by type.
-WildDog dog = objects.OfType<WildDog>().Single();
+WildDog dog = deserialized.OfType<WildDog>().Single();
 ```
 
 ### Schemaless objects
