@@ -16,9 +16,6 @@ module Stream =
     let toJsonNode (stream: Stream) =
         JsonSerializer.Deserialize<JsonNode> stream
 
-module JsonNode =
-    let deserialize (options: JsonOptions) (node: JsonNode) = Json.Deserialize node options
-
 module Scheme =
     [<AbstractClass>]
     type Animal() =
@@ -48,13 +45,9 @@ module Scheme =
     type WildDog() =
         inherit Dog()
 
-    let options =
-        JsonOptions()
-        |> _.WithDiscriminator(
-            Discriminator("Type", "Origin")
-                .With<WildDog>("Dog", "Wild")
-                .With<DomesticDog>("Dog", "Domestic")
-                .With<WildCat>("Cat", "Wild")
-                .With<DomesticCat>("Cat", "Domestic")
-        )
-        |> _.WithDiscriminator(Discriminator("Type").With<Cat>("Cat").With<Dog>("Dog"))
+    let discriminator =
+        Discriminator(JsonSerializerOptions.Default, "Type", "Origin")
+            .Map<WildDog>("Dog", "Wild")
+            .Map<DomesticDog>("Dog", "Domestic")
+            .Map<WildCat>("Cat", "Wild")
+            .Map<DomesticCat>("Cat", "Domestic")

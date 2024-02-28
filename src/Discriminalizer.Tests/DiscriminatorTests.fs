@@ -1,50 +1,51 @@
 [<VerifyXunit.UsesVerify>]
-module Discriminalizer.JsonTests
+module Discriminalizer.DiscriminatorTests
 
 open Discriminalizer.Tests
 open VerifyXunit
 open Xunit
 
 [<Fact>]
-let ``Deserialize single object`` () =
+let ``Deserialize object`` () =
     // lang=json
     """{"Type": "Dog", "Origin": "Domestic" }"""
     |> String.toStream
     |> Stream.toJsonNode
-    |> JsonNode.deserialize Scheme.options
+    |> Scheme.discriminator.DiscriminateNode
     |> Verifier.Verify
+    |> _.ToTask()
 
 
 [<Fact>]
-let ``Deserialize array that contains null`` () =
+let ``Deserialize array with null`` () =
     // lang=json
-    """[{"Type": "Dog"}, null]"""
+    """[{"Type": "Dog", "Origin": "Domestic"}, null]"""
     |> String.toStream
     |> Stream.toJsonNode
-    |> JsonNode.deserialize Scheme.options
+    |> Scheme.discriminator.DiscriminateNode
     |> Verifier.Verify
+    |> _.ToTask()
 
 [<Fact>]
-let ``Deserialize array with two discriminator schemes`` () =
+let ``Deserialize array`` () =
     // lang=json
     """
     [
       {"Type": "Dog", "Origin": "Domestic" },
       {"Type": "Cat", "Origin": "Domestic" },
-      {"Type": "Cat", "Origin": "Wild" },
-      {"Type": "Cat" },
-      {"Type": "Dog" }
+      {"Type": "Cat", "Origin": "Wild" }
     ]
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> JsonNode.deserialize Scheme.options
+    |> Scheme.discriminator.DiscriminateNode
     |> Verifier.Verify
+    |> _.ToTask()
 
 [<Theory>]
 [<InlineData true>]
 [<InlineData false>]
-let ``Deserialize single schemaless object`` (includeSchemaless: bool) =
+let ``Deserialize schemaless object`` (includeSchemaless: bool) =
     //lang=json
     """
       {
@@ -56,15 +57,16 @@ let ``Deserialize single schemaless object`` (includeSchemaless: bool) =
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> JsonNode.deserialize (Scheme.options.WithSchemaless())
+    |> Scheme.discriminator.Schemaless().DiscriminateNode
     |> Verifier.Verify
     |> _.UseParameters(includeSchemaless)
     |> _.HashParameters()
+    |> _.ToTask()
 
 [<Theory>]
 [<InlineData true>]
 [<InlineData false>]
-let ``Deserialize array with some schemaless objects`` (includeSchemaless: bool) =
+let ``Deserialize array with schemaless objects`` (includeSchemaless: bool) =
     //lang=json
     """
     [
@@ -82,7 +84,8 @@ let ``Deserialize array with some schemaless objects`` (includeSchemaless: bool)
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> JsonNode.deserialize (Scheme.options.WithSchemaless())
+    |> Scheme.discriminator.Schemaless().DiscriminateNode
     |> Verifier.Verify
     |> _.UseParameters(includeSchemaless)
     |> _.HashParameters()
+    |> _.ToTask()
