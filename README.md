@@ -1,6 +1,7 @@
 # Discriminalizer [![latest version](https://img.shields.io/nuget/v/discriminalizer)](https://www.nuget.org/packages/discriminalizer)
 
-.NET library designed for seamless JSON deserialization of objects with complex discrimination requirements, built on top
+.NET library designed for seamless JSON deserialization of objects with complex discrimination requirements, built on
+top
 of System.Text.Json.
 
 ## Motivation
@@ -21,6 +22,17 @@ converter implementations. This simplifies the deserialization process, resultin
 Let's take for example a list of animals, where each animal can be either a wild or domestic animal. The animals can be
 of different types, such as dogs and cats. We want to deserialize this list into a collection of objects, where each
 object represents a specific animal type.
+
+First thing is to create the classes that represent the animal types.
+
+```csharp
+public class WildDog { }
+public class DomesticDog { }
+public class WildCat { }
+public class DomesticCat { }
+```
+
+Then for a given JSON string, we need to use the `JsonSerialier` class to parse it into a `JsonNode` object.
 
 ```json
 [
@@ -43,45 +55,23 @@ object represents a specific animal type.
 ]
 ```
 
-Next thing is to define the classes that represent the animals.
-
 ```csharp
-public class WildDog { }
-public class DomesticDog { }
-public class WildCat { }
-public class DomesticCat { }
+JsonNode node = JsonSerializer.Deserialize<JsonNode>(json);
 ```
 
-Now we can use the `Discriminator` class to configure the deserialization scheme. The `Discriminator` has a constructor
-that takes the names of the properties that will be used to determine the type of the object.
-
-The `With` method is used to register the types that will be used to deserialize the objects. It take an array of
-property values, that will be used to determine if the JSON object represents the registered type.
+Finally we can use the `Discriminator` class to configure the scheme and deserialize a `JsonNode` object to a collection
+of objects (with concrete types).
 
 ```csharp
-Discriminator discriminator = new Discriminator("Type", "Origin")
-    .With<WildDog>("Dog", "Wild")
-    .With<DomesticDog>("Dog", "Domestic")
-    .With<WildCat>("Cat", "Wild")
-    .With<DomesticCat>("Cat", "Domestic");
-```
-
-Finally, we can use the `discriminator` to deserialize the JSON.
-
-```csharp
-// Configure the deserialization options. You need to provide JsonSerializerOptions, a list of discriminators and
-// a flag that indicates if "schemaless" objects should be deserialized as well. 
-// Schemaless objects are objects without a coresponding class.
-JsonOptions options = new JsonOptions().WithDiscriminator(discriminator);
-
-// Deserialize a JSON string (variable is out of scope) to JsonNode using System.Text.Json.JsonSerializer.
-JsonNode jsonNode = JsonSerializer.Deserialize<JsonNode>(jsonString);
-
-// Deserialize JsonNode into matching list of objects.
-IEnumerable<object> deserialized = await Json.Deserialize(jsonNode, options, CancellationToken.None);
+IEnumerable<object> objects = new Discriminator(JsonSerializerOptions.Default, "Type", "Origin")
+    .Map<WildDog>("Dog", "Wild")
+    .Map<DomesticDog>("Dog", "Domestic")
+    .Map<WildCat>("Cat", "Wild")
+    .Map<DomesticCat>("Cat", "Domestic")
+    .DiscriminateNode(node);
 
 // You can use the ".OfType<T>()" extension method to filter the objects by type.
-WildDog dog = deserialized.OfType<WildDog>().Single();
+WildDog dog = objects.OfType<WildDog>().Single();
 ```
 
 ### Schemaless objects
