@@ -1,0 +1,7 @@
+﻿[
+  {
+    AnimalType: Dog,
+    AnimalOrigin: Domestic,
+    ClassType: DomesticDog
+  }
+]

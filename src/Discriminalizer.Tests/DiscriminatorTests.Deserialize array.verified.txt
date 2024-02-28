@@ -1,0 +1,17 @@
+﻿[
+  {
+    AnimalType: Dog,
+    AnimalOrigin: Domestic,
+    ClassType: DomesticDog
+  },
+  {
+    AnimalType: Cat,
+    AnimalOrigin: Domestic,
+    ClassType: DomesticCat
+  },
+  {
+    AnimalType: Cat,
+    AnimalOrigin: Wild,
+    ClassType: WildCat
+  }
+]

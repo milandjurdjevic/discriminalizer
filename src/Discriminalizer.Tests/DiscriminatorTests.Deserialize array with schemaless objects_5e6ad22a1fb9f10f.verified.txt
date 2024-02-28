@@ -1,0 +1,25 @@
+﻿[
+  {
+    AnimalType: Dog,
+    AnimalOrigin: Domestic,
+    ClassType: DomesticDog
+  },
+  {
+    Animal: {
+      Origin: Wild,
+      Type: Fish
+    }
+  },
+  {
+    Animals: [
+      {
+        Origin: Wild,
+        Type: Fish
+      },
+      {
+        Origin: Domestic,
+        Type: Fish
+      }
+    ]
+  }
+]
