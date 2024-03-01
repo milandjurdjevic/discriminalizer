@@ -47,7 +47,7 @@ module Scheme =
 
     let discriminator =
         Discriminator(JsonSerializerOptions.Default, "Type", "Origin")
-            .Map<WildDog>("Dog", "Wild")
-            .Map<DomesticDog>("Dog", "Domestic")
-            .Map<WildCat>("Cat", "Wild")
-            .Map<DomesticCat>("Cat", "Domestic")
+            .Add<WildDog>("Dog", "Wild")
+            .Add<DomesticDog>("Dog", "Domestic")
+            .Add<WildCat>("Cat", "Wild")
+            .Add<DomesticCat>("Cat", "Domestic")

@@ -11,7 +11,7 @@ let ``Deserialize object`` () =
     """{"Type": "Dog", "Origin": "Domestic" }"""
     |> String.toStream
     |> Stream.toJsonNode
-    |> Scheme.discriminator.DiscriminateNode
+    |> Scheme.discriminator.Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
@@ -22,7 +22,7 @@ let ``Deserialize array with null`` () =
     """[{"Type": "Dog", "Origin": "Domestic"}, null]"""
     |> String.toStream
     |> Stream.toJsonNode
-    |> Scheme.discriminator.DiscriminateNode
+    |> Scheme.discriminator.Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
@@ -38,7 +38,7 @@ let ``Deserialize array`` () =
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> Scheme.discriminator.DiscriminateNode
+    |> Scheme.discriminator.Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
@@ -57,7 +57,7 @@ let ``Deserialize schemaless object`` (includeSchemaless: bool) =
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> Scheme.discriminator.Schemaless().DiscriminateNode
+    |> Scheme.discriminator.AsSchemaless().Discriminate
     |> Verifier.Verify
     |> _.UseParameters(includeSchemaless)
     |> _.HashParameters()
@@ -84,7 +84,7 @@ let ``Deserialize array with schemaless objects`` (includeSchemaless: bool) =
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> Scheme.discriminator.Schemaless().DiscriminateNode
+    |> Scheme.discriminator.AsSchemaless().Discriminate
     |> Verifier.Verify
     |> _.UseParameters(includeSchemaless)
     |> _.HashParameters()

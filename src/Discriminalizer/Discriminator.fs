@@ -28,21 +28,21 @@ module private JsonObject =
     let ofNode (node: JsonNode) = node.AsObject()
 
 type Discriminator
-    private (fields: string array, types: Map<string, Type>, options: JsonSerializerOptions, includeSchemaless: bool) =
+    private (fields: string array, types: Map<string, Type>, options: JsonSerializerOptions, isSchemaless: bool) =
     new(options: JsonSerializerOptions, [<ParamArray>] paths: string array) =
         if not options.IsReadOnly then
             invalidArg "options" "Options must be read-only"
 
         Discriminator(paths, Map.empty, options, false)
 
-    member _.Map<'T>([<ParamArray>] values: string array) =
+    member _.Add<'T>([<ParamArray>] values: string array) =
         let extended = types.Add(values |> String.concat String.Empty, typeof<'T>)
-        Discriminator(fields, extended, options, includeSchemaless)
+        Discriminator(fields, extended, options, isSchemaless)
 
-    member _.Schemaless() =
+    member _.AsSchemaless() =
         Discriminator(fields, types, options, true)
 
-    member this.DiscriminateNode(node: JsonNode) =
+    member this.Discriminate(node: JsonNode) =
         match node with
         | :? JsonArray as array ->
             array
@@ -58,7 +58,6 @@ type Discriminator
             |> Option.defaultValue Seq.empty
         | _ -> Seq.empty
 
-
     member private _.FormatDiscriminatorKey(object: JsonObject) =
         fields
         |> Seq.map (JsonObject.tryGetValue object)
@@ -70,4 +69,4 @@ type Discriminator
         types
         |> Map.tryFind (this.FormatDiscriminatorKey object)
         |> Option.map (fun some -> object.Deserialize(some, options))
-        |> Option.orElseWith (fun () -> object |> JsonObject.tryToSchemaless includeSchemaless)
+        |> Option.orElseWith (fun () -> object |> JsonObject.tryToSchemaless isSchemaless)
