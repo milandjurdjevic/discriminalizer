@@ -5,17 +5,29 @@ open System.Text.Json
 open System.Text.Json.Nodes
 open Microsoft.FSharp.Core
 
+module private JsonValue =
+
+    let toObject (value: JsonValue) : obj =
+        match value.GetValueKind() with
+        | JsonValueKind.String -> value.GetValue<string>()
+        | JsonValueKind.Number -> value.GetValue<double>()
+        | JsonValueKind.True -> value.GetValue<bool>()
+        | JsonValueKind.False -> value.GetValue<bool>()
+        | JsonValueKind.Undefined -> null
+        | JsonValueKind.Null -> null
+        | _ -> invalidOp "Unsupported value kind."
+
 module private JsonObject =
-    let rec toSchemaless (node: JsonNode) =
+    let rec toSchemaless (node: JsonNode) : obj =
         match node with
-        | :? JsonValue as jsonValue -> jsonValue.ToString() :> obj
+        | :? JsonValue as jsonValue -> jsonValue |> JsonValue.toObject
         | :? JsonObject as jsonObject ->
             jsonObject
             |> Seq.map (fun node -> node.Key, toSchemaless node.Value)
             |> readOnlyDict
-            :> obj
-        | :? JsonArray as jsonArray -> jsonArray |> Seq.map toSchemaless :> obj
-        | _ -> failwith $"Unsupported node type: {node.GetType().FullName}"
+            |> box
+        | :? JsonArray as jsonArray -> jsonArray |> Seq.map toSchemaless |> box
+        | _ -> null
 
     let tryToSchemaless (condition: bool) (node: JsonNode) =
         if condition then Some(toSchemaless node) else None
@@ -28,18 +40,19 @@ module private JsonObject =
     let ofNode (node: JsonNode) = node.AsObject()
 
 type Discriminator
-    private (fields: string array, types: Map<string, Type>, options: JsonSerializerOptions, isSchemaless: bool) =
+    private (fields: string array, types: Map<string, Type>, options: JsonSerializerOptions, isSchemalessIncluded: bool)
+    =
     new(options: JsonSerializerOptions, [<ParamArray>] paths: string array) =
         if not options.IsReadOnly then
             invalidArg "options" "Options must be read-only"
 
         Discriminator(paths, Map.empty, options, false)
 
-    member _.Add<'T>([<ParamArray>] values: string array) =
+    member _.WithSchema<'T>([<ParamArray>] values: string array) =
         let extended = types.Add(values |> String.concat String.Empty, typeof<'T>)
-        Discriminator(fields, extended, options, isSchemaless)
+        Discriminator(fields, extended, options, isSchemalessIncluded)
 
-    member _.AsSchemaless() =
+    member _.WithSchemaless() =
         Discriminator(fields, types, options, true)
 
     member this.Discriminate(node: JsonNode) =
@@ -69,4 +82,4 @@ type Discriminator
         types
         |> Map.tryFind (this.FormatDiscriminatorKey object)
         |> Option.map (fun some -> object.Deserialize(some, options))
-        |> Option.orElseWith (fun () -> object |> JsonObject.tryToSchemaless isSchemaless)
+        |> Option.orElseWith (fun () -> object |> JsonObject.tryToSchemaless isSchemalessIncluded)

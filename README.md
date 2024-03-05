@@ -64,10 +64,10 @@ of objects (with concrete types).
 
 ```csharp
 IEnumerable<object> objects = new Discriminator(JsonSerializerOptions.Default, "Type", "Origin")
-    .Add<WildDog>("Dog", "Wild")
-    .Add<DomesticDog>("Dog", "Domestic")
-    .Add<WildCat>("Cat", "Wild")
-    .Add<DomesticCat>("Cat", "Domestic")
+    .WithScheme<WildDog>("Dog", "Wild")
+    .WithScheme<DomesticDog>("Dog", "Domestic")
+    .WithScheme<WildCat>("Cat", "Wild")
+    .WithScheme<DomesticCat>("Cat", "Domestic")
     .Discriminate(node);
 
 // You can use the ".OfType<T>()" extension method to filter the objects by type.

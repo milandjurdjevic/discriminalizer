@@ -1,0 +1,21 @@
+﻿[
+  {
+    Animals: [
+      {
+        Origin: Wild,
+        Type: Fish
+      },
+      {
+        Origin: null,
+        Type: Fish
+      }
+    ],
+    Attributes: [
+      Fast,
+      Small
+    ],
+    Type: Fish,
+    Weight: 2.5,
+    Wild: true
+  }
+]

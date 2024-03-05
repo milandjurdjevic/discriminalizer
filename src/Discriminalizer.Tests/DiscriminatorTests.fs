@@ -11,7 +11,7 @@ let ``Deserialize object`` () =
     """{"Type": "Dog", "Origin": "Domestic" }"""
     |> String.toStream
     |> Stream.toJsonNode
-    |> Scheme.discriminator.Discriminate
+    |> Schema.discriminator.Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
@@ -22,7 +22,7 @@ let ``Deserialize array with null`` () =
     """[{"Type": "Dog", "Origin": "Domestic"}, null]"""
     |> String.toStream
     |> Stream.toJsonNode
-    |> Scheme.discriminator.Discriminate
+    |> Schema.discriminator.Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
@@ -38,54 +38,65 @@ let ``Deserialize array`` () =
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> Scheme.discriminator.Discriminate
+    |> Schema.discriminator.Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
-[<Theory>]
-[<InlineData true>]
-[<InlineData false>]
-let ``Deserialize schemaless object`` (includeSchemaless: bool) =
+[<Fact>]
+let ``Deserialize schemaless object`` () =
     //lang=json
     """
       {
+        "Type": "Fish",
+        "Wild": true,
+        "Weight": 2.5,
+        "Attributes": [
+         "Fast",
+         "Small"
+        ],
         "Animals": [
           { "Type": "Fish", "Origin": "Wild" },
-          { "Type": "Fish", "Origin": "Domestic" }
+          { "Type": "Fish", "Origin": null }
         ]
       }
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> Scheme.discriminator.AsSchemaless().Discriminate
+    |> Schema.discriminator.WithSchemaless().Discriminate
     |> Verifier.Verify
-    |> _.UseParameters(includeSchemaless)
-    |> _.HashParameters()
     |> _.ToTask()
 
-[<Theory>]
-[<InlineData true>]
-[<InlineData false>]
-let ``Deserialize array with schemaless objects`` (includeSchemaless: bool) =
+[<Fact>]
+let ``Deserialize schemaless array`` () =
     //lang=json
     """
     [
-      { "Type": "Dog", "Origin": "Domestic" },
-      { 
-        "Animal": { "Type": "Fish", "Origin": "Wild" }
-      },
       {
+        "Type": "Fish",
+        "Wild": false,
+        "Weight": 2.5,
+        "Attributes": [
+         "Fast",
+         "Small"
+        ],
         "Animals": [
           { "Type": "Fish", "Origin": "Wild" },
-          { "Type": "Fish", "Origin": "Domestic" }
+          { "Type": "Fish", "Origin": null }
+        ]
+      },
+      {
+        "Type": "Fish",
+        "Wild": true,
+        "Weight": 25,
+        "Attributes": [
+         "Slow",
+         "Large"
         ]
       }
     ]
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> Scheme.discriminator.AsSchemaless().Discriminate
+    |> Schema.discriminator.WithSchemaless().Discriminate
     |> Verifier.Verify
-    |> _.UseParameters(includeSchemaless)
-    |> _.HashParameters()
     |> _.ToTask()
