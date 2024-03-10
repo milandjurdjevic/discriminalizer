@@ -1,7 +1,9 @@
 [<VerifyXunit.UsesVerify>]
 module Discriminalizer.DiscriminatorTests
 
+open System.Text.Json
 open Discriminalizer.Tests
+open Discriminalizer.Tests.Schema
 open VerifyXunit
 open Xunit
 
@@ -11,10 +13,9 @@ let ``Deserialize object`` () =
     """{"Type": "Dog", "Origin": "Domestic" }"""
     |> String.toStream
     |> Stream.toJsonNode
-    |> Schema.discriminator.Discriminate
+    |> discriminator.Discriminate
     |> Verifier.Verify
     |> _.ToTask()
-
 
 [<Fact>]
 let ``Deserialize array with null`` () =
@@ -22,7 +23,7 @@ let ``Deserialize array with null`` () =
     """[{"Type": "Dog", "Origin": "Domestic"}, null]"""
     |> String.toStream
     |> Stream.toJsonNode
-    |> Schema.discriminator.Discriminate
+    |> discriminator.Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
@@ -38,7 +39,7 @@ let ``Deserialize array`` () =
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> Schema.discriminator.Discriminate
+    |> discriminator.Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
@@ -62,7 +63,7 @@ let ``Deserialize schemaless object`` () =
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> Schema.discriminator.WithSchemaless().Discriminate
+    |> discriminator.WithSchemaless().Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
@@ -97,6 +98,6 @@ let ``Deserialize schemaless array`` () =
     """
     |> String.toStream
     |> Stream.toJsonNode
-    |> Schema.discriminator.WithSchemaless().Discriminate
+    |> discriminator.WithSchemaless().Discriminate
     |> Verifier.Verify
     |> _.ToTask()
