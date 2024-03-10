@@ -1,7 +1,6 @@
 [<VerifyXunit.UsesVerify>]
 module Discriminalizer.DiscriminatorTests
 
-open System.Text.Json
 open Discriminalizer.Tests
 open Discriminalizer.Tests.Schema
 open VerifyXunit
