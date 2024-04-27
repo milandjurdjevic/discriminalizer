@@ -15,6 +15,8 @@ let private convertStringNumber (value: string) : obj =
     let noneIf (shouldNone: 'a -> bool) (result: 'a option) =
         result |> Option.bind (fun v -> if shouldNone v then None else Some v)
 
+    let orElse (b: unit -> obj option) (a: obj option) = a |> Option.orElse <| b ()
+
     let int16Parse () =
         Int16.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
         |> tryReturnBoxed
@@ -48,12 +50,12 @@ let private convertStringNumber (value: string) : obj =
         |> tryReturnBoxed
 
     byteParse ()
-    |> Option.orElse (int16Parse ())
-    |> Option.orElse (int32Parse ())
-    |> Option.orElse (int64Parse ())
-    |> Option.orElse (singleParse ())
-    |> Option.orElse (doubleParse ())
-    |> Option.orElse (decimalParse ())
+    |> orElse int16Parse
+    |> orElse int32Parse
+    |> orElse int64Parse
+    |> orElse singleParse
+    |> orElse doubleParse
+    |> orElse decimalParse
     |> Option.get
 
 // Converts a JSON value to a .NET object.
