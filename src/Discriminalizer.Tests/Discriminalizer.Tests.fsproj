@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Fixture.fs"/>
         <Compile Include="DiscriminatorTests.fs"/>
+        <Compile Include="SchemalessTest.fs"/>
         <Compile Include="Program.fs"/>
     </ItemGroup>
 
@@ -32,6 +32,29 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Discriminalizer\Discriminalizer.fsproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="DiscriminatorTest.deserialize array with null.verified.txt">
+            <ParentFile>DiscriminatorTest</ParentFile>
+            <DependentUpon>DiscriminatorTest.fs</DependentUpon>
+        </None>
+        <None Update="DiscriminatorTest.deserialize array.verified.txt">
+            <ParentFile>DiscriminatorTest</ParentFile>
+            <DependentUpon>DiscriminatorTest.fs</DependentUpon>
+        </None>
+        <None Update="DiscriminatorTest.deserialize object.verified.txt">
+            <ParentFile>DiscriminatorTest</ParentFile>
+            <DependentUpon>DiscriminatorTest.fs</DependentUpon>
+        </None>
+        <None Update="DiscriminatorTest.deserialize schemaless array.verified.txt">
+            <ParentFile>DiscriminatorTest</ParentFile>
+            <DependentUpon>DiscriminatorTest.fs</DependentUpon>
+        </None>
+        <None Update="DiscriminatorTest.deserialize schemaless object.verified.txt">
+            <ParentFile>DiscriminatorTest</ParentFile>
+            <DependentUpon>DiscriminatorTest.fs</DependentUpon>
+        </None>
     </ItemGroup>
 
 </Project>

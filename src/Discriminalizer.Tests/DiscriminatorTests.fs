@@ -1,33 +1,74 @@
 [<VerifyXunit.UsesVerify>]
-module Discriminalizer.DiscriminatorTests
+module Discriminalizer.DiscriminatorTest
 
-open Discriminalizer.Tests
-open Discriminalizer.Tests.Schema
+open System.IO
+open System.Text
+open System.Text.Json
+open System.Text.Json.Nodes
+open System.Text.Json.Serialization
 open VerifyXunit
 open Xunit
 
+[<AbstractClass>]
+type Animal() =
+    [<JsonPropertyName("Type")>]
+    member val AnimalType: string = "" with get, set
+
+    [<JsonPropertyName("Origin")>]
+    member val AnimalOrigin: string = "" with get, set
+
+    member this.ClassType: string = this.GetType().Name
+
+type Cat() =
+    inherit Animal()
+
+type DomesticCat() =
+    inherit Cat()
+
+type WildCat() =
+    inherit Cat()
+
+type Dog() =
+    inherit Animal()
+
+type DomesticDog() =
+    inherit Dog()
+
+type WildDog() =
+    inherit Dog()
+
+let discriminator =
+    Discriminator(JsonSerializerOptions.Default, "Type", "Origin")
+        .WithSchema<WildDog>("Dog", "Wild")
+        .WithSchema<DomesticDog>("Dog", "Domestic")
+        .WithSchema<WildCat>("Cat", "Wild")
+        .WithSchema<DomesticCat>("Cat", "Domestic")
+
+let deserialize (value: string) =
+    let bytes = Encoding.UTF8.GetBytes value
+    use stream = new MemoryStream(bytes)
+    JsonSerializer.Deserialize<JsonNode> stream
+
 [<Fact>]
-let ``Deserialize object`` () =
+let ``deserialize object`` () =
     // lang=json
     """{"Type": "Dog", "Origin": "Domestic" }"""
-    |> String.toStream
-    |> Stream.toJsonNode
+    |> deserialize
     |> discriminator.Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
 [<Fact>]
-let ``Deserialize array with null`` () =
+let ``deserialize array with null`` () =
     // lang=json
     """[{"Type": "Dog", "Origin": "Domestic"}, null]"""
-    |> String.toStream
-    |> Stream.toJsonNode
+    |> deserialize
     |> discriminator.Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
 [<Fact>]
-let ``Deserialize array`` () =
+let ``deserialize array`` () =
     // lang=json
     """
     [
@@ -36,14 +77,13 @@ let ``Deserialize array`` () =
       {"Type": "Cat", "Origin": "Wild" }
     ]
     """
-    |> String.toStream
-    |> Stream.toJsonNode
+    |> deserialize
     |> discriminator.Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
 [<Fact>]
-let ``Deserialize schemaless object`` () =
+let ``deserialize schemaless object`` () =
     //lang=json
     """
       {
@@ -60,14 +100,13 @@ let ``Deserialize schemaless object`` () =
         ]
       }
     """
-    |> String.toStream
-    |> Stream.toJsonNode
+    |> deserialize
     |> discriminator.WithSchemaless().Discriminate
     |> Verifier.Verify
     |> _.ToTask()
 
 [<Fact>]
-let ``Deserialize schemaless array`` () =
+let ``deserialize schemaless array`` () =
     //lang=json
     """
     [
@@ -95,8 +134,7 @@ let ``Deserialize schemaless array`` () =
       }
     ]
     """
-    |> String.toStream
-    |> Stream.toJsonNode
+    |> deserialize
     |> discriminator.WithSchemaless().Discriminate
     |> Verifier.Verify
     |> _.ToTask()

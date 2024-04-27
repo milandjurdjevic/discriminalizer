@@ -25,6 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Include="Schemaless.fs"/>
         <Compile Include="Discriminator.fs"/>
     </ItemGroup>
 

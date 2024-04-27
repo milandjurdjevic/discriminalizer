@@ -24,7 +24,7 @@
       Large
     ],
     Type: Fish,
-    Weight: 25.0,
+    Weight: 25,
     Wild: true
   }
 ]
