@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="DiscriminatorTests.fs"/>
-        <Compile Include="SchemalessTest.fs"/>
+        <Compile Include="SchemabasedDiscriminatorTest.fs"/>
+        <Compile Include="SchemalessDiscriminatorTest.fs"/>
         <Compile Include="Program.fs"/>
     </ItemGroup>
 
@@ -35,25 +35,47 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="DiscriminatorTest.deserialize array with null.verified.txt">
-            <ParentFile>DiscriminatorTest</ParentFile>
-            <DependentUpon>DiscriminatorTest.fs</DependentUpon>
+        <None Update="SchemalessDiscriminatorTest.discriminate array.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
         </None>
-        <None Update="DiscriminatorTest.deserialize array.verified.txt">
-            <ParentFile>DiscriminatorTest</ParentFile>
-            <DependentUpon>DiscriminatorTest.fs</DependentUpon>
+        <None Update="SchemalessDiscriminatorTest.discriminate byte max.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
         </None>
-        <None Update="DiscriminatorTest.deserialize object.verified.txt">
-            <ParentFile>DiscriminatorTest</ParentFile>
-            <DependentUpon>DiscriminatorTest.fs</DependentUpon>
+        <None Update="SchemalessDiscriminatorTest.discriminate byte min.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
         </None>
-        <None Update="DiscriminatorTest.deserialize schemaless array.verified.txt">
-            <ParentFile>DiscriminatorTest</ParentFile>
-            <DependentUpon>DiscriminatorTest.fs</DependentUpon>
+        <None Update="SchemalessDiscriminatorTest.discriminate double max.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
         </None>
-        <None Update="DiscriminatorTest.deserialize schemaless object.verified.txt">
-            <ParentFile>DiscriminatorTest</ParentFile>
-            <DependentUpon>DiscriminatorTest.fs</DependentUpon>
+        <None Update="SchemalessDiscriminatorTest.discriminate double min.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
+        </None>
+        <None Update="SchemalessDiscriminatorTest.discriminate float max.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
+        </None>
+        <None Update="SchemalessDiscriminatorTest.discriminate float min.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
+        </None>
+        <None Update="SchemalessDiscriminatorTest.discriminate int16 max.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
+        </None>
+        <None Update="SchemalessDiscriminatorTest.discriminate int16 min.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
+        </None>
+        <None Update="SchemalessDiscriminatorTest.discriminate int32 max.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
+        </None>
+        <None Update="SchemalessDiscriminatorTest.discriminate int32 min.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
+        </None>
+        <None Update="SchemalessDiscriminatorTest.discriminate int64 max.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
+        </None>
+        <None Update="SchemalessDiscriminatorTest.discriminate int64 min.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
+        </None>
+        <None Update="SchemalessDiscriminatorTest.discriminate object.verified.txt">
+            <ParentFile>SchemalessDiscriminatorTest</ParentFile>
         </None>
     </ItemGroup>
 

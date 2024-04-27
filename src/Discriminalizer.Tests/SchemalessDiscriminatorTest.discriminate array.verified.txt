@@ -1,0 +1,28 @@
+﻿[
+  {
+    age: 40,
+    contact: {
+      email: john1@mail.com,
+      phone: 12345
+    },
+    employed: true,
+    name: John1,
+    transactions: [
+      100,
+      -50.5
+    ]
+  },
+  {
+    age: 30,
+    contact: {
+      email: john2@mail.com,
+      phone: 54321
+    },
+    employed: true,
+    name: John2,
+    transactions: [
+      100,
+      -35.5
+    ]
+  }
+]
