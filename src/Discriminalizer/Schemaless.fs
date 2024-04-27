@@ -15,10 +15,20 @@ let private convertStringNumber (value: string) : obj =
     let bindNoneIfTrue (shouldNone: 'a -> bool) (result: 'a option) =
         result |> Option.bind (fun v -> if shouldNone v then None else Some v)
 
-    tryReturnBoxed (Byte.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture))
-    |> Option.orElse (tryReturnBoxed (Int16.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)))
-    |> Option.orElse (tryReturnBoxed (Int32.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)))
-    |> Option.orElse (tryReturnBoxed (Int64.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)))
+    Byte.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
+    |> tryReturnBoxed
+    |> Option.orElse (
+        Int16.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
+        |> tryReturnBoxed
+    )
+    |> Option.orElse (
+        Int32.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
+        |> tryReturnBoxed
+    )
+    |> Option.orElse (
+        Int64.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
+        |> tryReturnBoxed
+    )
     |> Option.orElse (
         // Single value can evaluate to positive or negative infinity, so we need to check that.
         Single.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
