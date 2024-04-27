@@ -12,38 +12,48 @@ let private convertStringNumber (value: string) : obj =
 
     let tryReturnBoxed result = result |> tryReturn |> Option.map box
 
-    let bindNoneIfTrue (shouldNone: 'a -> bool) (result: 'a option) =
+    let noneIf (shouldNone: 'a -> bool) (result: 'a option) =
         result |> Option.bind (fun v -> if shouldNone v then None else Some v)
 
-    Byte.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
-    |> tryReturnBoxed
-    |> Option.orElse (
+    let int16Parse () =
         Int16.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
         |> tryReturnBoxed
-    )
-    |> Option.orElse (
+
+    let int32Parse () =
         Int32.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
         |> tryReturnBoxed
-    )
-    |> Option.orElse (
+
+    let int64Parse () =
         Int64.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
         |> tryReturnBoxed
-    )
-    |> Option.orElse (
-        // Single value can evaluate to positive or negative infinity, so we need to check that.
+
+    let singleParse () =
         Single.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
         |> tryReturn
-        |> bindNoneIfTrue Single.IsInfinity
+        |> noneIf Single.IsInfinity
         |> Option.map box
-    )
-    |> Option.orElse (
-        // Double value can evaluate to positive or negative infinity, so we need to check that.
+
+    let doubleParse () =
         Double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
         |> tryReturn
-        |> bindNoneIfTrue Double.IsInfinity
+        |> noneIf Double.IsInfinity
         |> Option.map box
-    )
-    |> Option.orElse (tryReturnBoxed (Decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)))
+
+    let decimalParse () =
+        Decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
+        |> tryReturnBoxed
+
+    let byteParse () =
+        Byte.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture)
+        |> tryReturnBoxed
+
+    byteParse ()
+    |> Option.orElse (int16Parse ())
+    |> Option.orElse (int32Parse ())
+    |> Option.orElse (int64Parse ())
+    |> Option.orElse (singleParse ())
+    |> Option.orElse (doubleParse ())
+    |> Option.orElse (decimalParse ())
     |> Option.get
 
 // Converts a JSON value to a .NET object.
