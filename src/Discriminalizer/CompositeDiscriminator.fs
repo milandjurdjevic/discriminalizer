@@ -1,7 +1,8 @@
 namespace Discriminalizer
 
-type CompositeDiscriminator(discriminators: IDiscriminator seq) =
+open System
 
+type CompositeDiscriminator([<ParamArray>] discriminators: IDiscriminator array) =
     interface IDiscriminator with
         member this.Discriminate node =
             discriminators

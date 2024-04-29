@@ -6,7 +6,15 @@ open System.Text.Json.Nodes
 open Microsoft.FSharp.Core
 open System.Linq
 
-type SchemabasedDiscriminator(fields: string array, values: Map<string, Type>, options: JsonSerializerOptions) =
+type SchemabasedDiscriminator private (fields: string seq, values: Map<string, Type>, options: JsonSerializerOptions) =
+
+    new(options: JsonSerializerOptions, [<ParamArray>] fields: string array) =
+        SchemabasedDiscriminator(fields, Map.empty, options)
+
+    member _.WithType<'a>([<ParamArray>] typeValues: string array) =
+        let key = typeValues |> String.concat String.Empty
+        SchemabasedDiscriminator(fields, values.Add(key, typeof<'a>), options)
+
     member private _.TryDiscern(object: JsonObject) : Type option =
         let findFieldValue field =
             object

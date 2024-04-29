@@ -61,7 +61,6 @@ let ``discriminate array`` () =
 let ``discriminate byte max`` () =
     verify <| JsonValue.Create(Byte.MaxValue)
 
-
 [<Fact>]
 let ``discriminate byte min`` () =
     verify <| JsonValue.Create(Byte.MinValue)
@@ -106,11 +105,9 @@ let ``discriminate double max`` () =
 let ``discriminate double min`` () =
     verify <| JsonValue.Create(Double.MinValue)
 
-
 [<Fact(Skip = "Decimals are not properly supported")>]
 let ``discriminate decimal max`` () =
     verify <| JsonValue.Create(Decimal.MaxValue)
-
 
 [<Fact(Skip = "Decimals are not properly supported")>]
 let ``discriminate decimal min`` () =

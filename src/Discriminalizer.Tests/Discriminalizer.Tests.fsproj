@@ -11,6 +11,7 @@
     <ItemGroup>
         <Compile Include="SchemabasedDiscriminatorTest.fs"/>
         <Compile Include="SchemalessDiscriminatorTest.fs"/>
+        <Compile Include="CompositeDiscriminatorTest.fs"/>
         <Compile Include="Program.fs"/>
     </ItemGroup>
 
