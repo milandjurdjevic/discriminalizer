@@ -24,7 +24,7 @@ converter implementations. This simplifies the deserialization process, resultin
 **The Schemabased Type Discrimination** feature allows JSON deserialization of objects based on specific properties
 within the JSON data.
 
-JSON Example:
+JSON Example
 
 ```json
 [
@@ -33,7 +33,7 @@ JSON Example:
 ]
 ```
 
-C# Example:
+C# Example
 
 ```csharp
 IEnumerable<FirstClass> discriminated = new SchemabasedDiscriminator(JsonSerializerOptions.Default, "Prop1", "Prop2")
@@ -43,7 +43,7 @@ IEnumerable<FirstClass> discriminated = new SchemabasedDiscriminator(JsonSeriali
     .OfType<FirstClass>();
 ```
 
-F# Example:
+F# Example
 
 ```fsharp
 let discriminated: FirstClass seq =
@@ -64,7 +64,7 @@ properties within the
 JSON data. This feature is particularly useful when dealing with JSON data where the type of the object to be
 deserialized is not determined by the values of certain properties in the JSON data.
 
-JSON Example:
+JSON Example
 
 ```json
 [
@@ -104,7 +104,7 @@ JSON Example:
 ]
 ```
 
-C# Example:
+C# Example
 
 ```csharp
 Discriminator discriminator1 = new SchemabasedDiscriminator(JsonSerializerOptions.Default, "Prop1")
@@ -122,7 +122,7 @@ IEnumerable<FirstClass> discriminated = discriminator
     .OfType<FirstClass>();
 ```
 
-F# Example:
+F# Example
 
 ```fsharp
 let discriminator1 = SchemabasedDiscriminator(JsonSerializerOptions.Default, "Prop1")
