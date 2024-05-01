@@ -54,8 +54,8 @@ let discriminated: FirstClass seq =
     |> Seq.choose (fun obj -> match obj with | :? FirstClass as fcls -> Some fcls | _ -> None)
 ```
 
-In this example, the JSON data `{"Prop1": "Class", "Prop2": 1 }` would be deserialized into an instance of SubClass1
-because "Prop1" is "Class" and "Prop2" is 1. If "Prop2" was 2, it would be deserialized into an instance of SubClass2.
+In this example, the JSON data `{"Prop1": "Class", "Prop2": 1 }` would be deserialized into an instance of FirstClass
+because "Prop1" is "Class" and "Prop2" is 1. If "Prop2" was 2, it would be deserialized into an instance of SecondClass.
 
 ### Schemaless Type Discrimination
 
