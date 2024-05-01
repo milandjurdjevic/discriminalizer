@@ -7,6 +7,11 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Discriminalizer", "Discrimi
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Discriminalizer.Tests", "Discriminalizer.Tests\Discriminalizer.Tests.fsproj", "{DC4E9F01-7B9C-452A-B9A5-4D2C917D34F5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{8DC4D0C2-97C4-44AF-A4D7-6E9E4BF09563}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\main.yml = ..\.github\workflows\main.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
