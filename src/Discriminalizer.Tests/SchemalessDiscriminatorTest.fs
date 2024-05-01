@@ -8,7 +8,7 @@ open VerifyXunit
 open Xunit
 
 let verify object =
-    let discriminator: IDiscriminator = SchemalessDiscriminator()
+    let discriminator: Discriminator = SchemalessDiscriminator()
     discriminator.Discriminate object |> Verifier.Verify |> _.ToTask()
 
 [<Fact>]

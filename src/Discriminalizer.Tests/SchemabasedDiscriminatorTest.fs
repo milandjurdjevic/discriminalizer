@@ -16,10 +16,10 @@ type SubClass1() =
 type SubClass2() =
     inherit SubClass1()
 
-let discriminator: IDiscriminator =
+let discriminator: Discriminator =
     SchemabasedDiscriminator(JsonSerializerOptions.Default, "Prop1", "Prop2")
-        .WithType<SubClass1>("Class1")
-        .WithType<SubClass2>("Class2")
+        .WithType<SubClass1>("Class", "1")
+        .WithType<SubClass2>("Class", "2")
 
 [<Fact>]
 let ``discriminate object`` () =

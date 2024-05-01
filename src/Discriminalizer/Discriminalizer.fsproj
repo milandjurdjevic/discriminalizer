@@ -25,13 +25,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="TupleExtensions.fs"/>
-        <Compile Include="StringExtensions.fs"/>
-        <Compile Include="JsonValueExtensions.fs"/>
-        <Compile Include="IDiscriminator.fs"/>
-        <Compile Include="SchemabasedDiscriminator.fs"/>
-        <Compile Include="SchemalessDiscriminator.fs"/>
-        <Compile Include="CompositeDiscriminator.fs"/>
+        <Compile Include="Extensions.fs"/>
+        <Compile Include="Discriminator.fs"/>
     </ItemGroup>
 
     <ItemGroup>

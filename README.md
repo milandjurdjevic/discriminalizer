@@ -17,74 +17,133 @@ to deserialize JSON, even when dealing with intricate discrimination requirement
 With this library, developers can efficiently map JSON data to their object models without the need for extensive custom
 converter implementations. This simplifies the deserialization process, resulting in cleaner and more maintainable code.
 
-## Usage
+## Features
 
-Let's take for example a list of animals, where each animal can be either a wild or domestic animal. The animals can be
-of different types, such as dogs and cats. We want to deserialize this list into a collection of objects, where each
-object represents a specific animal type.
+### Schemabased Type Discrimination
 
-First thing is to create the classes that represent the animal types.
+**The Schemabased Type Discrimination** feature allows JSON deserialization of objects based on specific properties
+within the JSON data.
 
-```csharp
-public class WildDog { }
-public class DomesticDog { }
-public class WildCat { }
-public class DomesticCat { }
-```
-
-Then for a given JSON string, we need to use the `JsonSerialier` class to parse it into a `JsonNode` object.
+JSON Example:
 
 ```json
 [
-  {
-    "Type": "Dog",
-    "Origin": "Wild"
-  },
-  {
-    "Type": "Dog",
-    "Origin": "Domestic"
-  },
-  {
-    "Type": "Cat",
-    "Origin": "Wild"
-  },
-  {
-    "Type": "Cat",
-    "Origin": "Domestic"
-  }
+  { "Prop1": "Class", "Prop2": 1 },
+  { "Prop1": "Class", "Prop2": 2 }
 ]
 ```
 
-```csharp
-JsonNode node = JsonSerializer.Deserialize<JsonNode>(json);
-```
-
-Finally we can use the `Discriminator` class to configure the scheme and deserialize a `JsonNode` object to a collection
-of objects (with concrete types).
+C# Example:
 
 ```csharp
-IEnumerable<object> objects = new Discriminator(JsonSerializerOptions.Default, "Type", "Origin")
-    .WithSchema<WildDog>("Dog", "Wild")
-    .WithSchema<DomesticDog>("Dog", "Domestic")
-    .WithSchema<WildCat>("Cat", "Wild")
-    .WithSchema<DomesticCat>("Cat", "Domestic")
-    .Discriminate(node);
-
-// You can use the ".OfType<T>()" extension method to filter the objects by type.
-WildDog dog = objects
-    .OfType<WildDog>()
-    .Single();
+IEnumerable<FirstClass> discriminated = new SchemabasedDiscriminator(JsonSerializerOptions.Default, "Prop1", "Prop2")
+    .WithType<FirstClass>("Class", "1")
+    .WithType<SecondClass>("Class", "2")
+    .Discriminate(json)
+    .OfType<FirstClass>();
 ```
 
-### Schemaless objects
+F# Example:
 
-If you want to deserialize objects that do not have a corresponding class, you need to enable it in the `JsonOptions`.
-The schemaless objects will be deserialized as `IReadOnlyDictionary<string, object>`.
+```fsharp
+let discriminated: FirstClass seq =
+    SchemabasedDiscriminator(JsonSerializerOptions.Default, "Prop1", "Prop2")
+        .WithType<FirstClass>("Class", "1")
+        .WithType<SecondClass>("Class", "2")
+        .Discriminate(jsonNode)
+    |> Seq.choose (fun obj -> match obj with | :? FirstClass as fcls -> Some fcls | _ -> None)
+```
 
-**IMPORTANT**: This feature uses recursion to travel through the nested JSON objects, so it can
-cause `StackOverflowException` if an object is too deep. Unless you really need this feature and you are sure that there
-are not too many levels of nested objects, it is best to keep it **disabled**.
+In this example, the JSON data `{"Prop1": "Class", "Prop2": 1 }` would be deserialized into an instance of SubClass1
+because "Prop1" is "Class" and "Prop2" is 1. If "Prop2" was 2, it would be deserialized into an instance of SubClass2.
+
+### Schemaless Type Discrimination
+
+**The Schemaless Discrimination** feature allows JSON deserialization of objects without the need for specific
+properties within the
+JSON data. This feature is particularly useful when dealing with JSON data where the type of the object to be
+deserialized is not determined by the values of certain properties in the JSON data.
+
+JSON Example:
+
+```json
+[
+  { "Prop1": "Class" },
+  { "Prop1": 50 },
+  "Hello World"
+]
+```
+
+C# Example
+
+```csharp
+IEnumerable<object> discriminated = new SchemalessDiscriminator().Discriminate(jsonNode);
+```
+
+F# Example
+
+```fsharp
+let discriminated: obj seq = SchemalessDiscriminator().Discriminate(jsonNode)
+```
+
+In this example, the given JSON input will be converted to a collection of two dictionaries and one string value,
+casted as objects.
+
+### Composite Type Discrimination
+
+**The Composite Type Discrimination** feature allows for JSON deserialization of objects using a combination of both
+Schemabased and Schemaless Discrimination. You can also combine multiple Schemabased discriminators.
+
+JSON Example:
+
+```json
+[
+  { "Prop1": "Class" },
+  { "Prop3": 50 },
+  { "Prop6": "Class" }
+]
+```
+
+C# Example:
+
+```csharp
+Discriminator discriminator1 = new SchemabasedDiscriminator(JsonSerializerOptions.Default, "Prop1")
+    .WithType<FirstClass>("Class");
+
+Discriminator discriminator2 = new SchemabasedDiscriminator(JsonSerializerOptions.Default, "Prop3")
+    .WithType<FirstClass>("50");
+
+Discriminator discriminator3 = new SchemalessDiscriminator();
+
+Discriminator discriminator = new CompositeDiscriminator(discriminator1, discriminator2, discriminator3);
+
+IEnumerable<FirstClass> discriminated = discriminator
+    .Discriminate(jsonNode)
+    .OfType<FirstClass>();
+```
+
+F# Example:
+
+```fsharp
+let discriminator1 = SchemabasedDiscriminator(JsonSerializerOptions.Default, "Prop1")
+    .WithType<FirstClass>("Class")
+    
+let discriminator2 = SchemabasedDiscriminator(JsonSerializerOptions.Default, "Prop3")
+    .WithType<FirstClass>("50")
+    
+let discriminator3 = SchemalessDiscriminator()
+
+let discriminator = CompositeDiscriminator(discriminator1, discriminator2, discriminator3)
+
+let discriminated: FirstClass seq =
+    discriminator
+    .Discriminate(jsonNode)
+    |> Seq.choose (fun obj -> match obj with | :? FirstClass as fcls -> Some fcls | _ -> None)
+```
+
+In this example, the given JSON input will be discriminated as a collection of two objects with `FirstClass` type and
+one dictionary.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for more details.
+See [License](LICENSE) for more details.

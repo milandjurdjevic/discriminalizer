@@ -3,8 +3,15 @@ namespace Discriminalizer
 open System
 open System.Globalization
 open System.Runtime.CompilerServices
+open System.Text.Json
+open System.Text.Json.Nodes
 
-type internal StringExtensions() =
+type internal Extensions() =
+
+    [<Extension>]
+    static member ToOption(this: bool * 'a) =
+        if fst this then Some(snd this) else None
+
 
     [<Extension>]
     static member ToNumber(this: string) =
@@ -25,3 +32,14 @@ type internal StringExtensions() =
             |> Option.map box)
         // BUG: Decimal Parser Not Reached
         |> Option.orElseWith (fun () -> Decimal.TryParse(this, culture).ToOption() |> Option.map box)
+
+    [<Extension>]
+    static member ToObject(this: JsonValue) : obj =
+        match this.GetValueKind() with
+        | JsonValueKind.String -> this.GetValue<string>()
+        | JsonValueKind.Number -> this.ToString() |> _.ToNumber() |> Option.get
+        | JsonValueKind.True -> true
+        | JsonValueKind.False -> false
+        | JsonValueKind.Undefined -> null
+        | JsonValueKind.Null -> null
+        | _ -> invalidOp $"Unknown value kind: {this.ToString()}."

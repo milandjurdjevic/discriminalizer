@@ -1,3 +1,5 @@
-﻿{
-  ClrType: SubClass1
-}
+﻿[
+  {
+    ClrType: SubClass1
+  }
+]
