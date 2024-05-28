@@ -1,10 +1,11 @@
 [<VerifyXunit.UsesVerify>]
-module Discriminalizer.SchemabasedDiscriminatorTest
+module Discriminalizer.Tests.SchemabasedDiscriminatorTest
 
 open System.Text.Json
 open System.Text.Json.Nodes
 open VerifyXunit
 open Xunit
+open Discriminalizer
 
 [<AbstractClass>]
 type BaseClass() =
